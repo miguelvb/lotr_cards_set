@@ -23,3 +23,8 @@ with the set you want to generate. Example:
 folder = "The-Hunt-for-Gollum"
 
 Once this is done, run *cards_to_pdf.py*
+
+Use http://hallofbeorn.com/LotR/Products to find the names of the set you want to generate. Copy the exact path-name.  
+Example: Clicking on the "Lost Realm Expansion" on http://hallofbeorn.com/LotR/Products you are directed to:  
+http://hallofbeorn.com/LotR/Products/The-Lost-Realm?View=Browse
+Copy then "The-Lost-Realm" as the set and folder as indicated above.  
