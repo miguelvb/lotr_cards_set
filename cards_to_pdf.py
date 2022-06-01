@@ -3,11 +3,14 @@ from fpdf import FPDF
 from math import ceil
 
 #folder = "The-Hills-of-Emyn-Muil"
-folder = "The-Hunt-for-Gollum"
-#folder = "A-Journey-to-Rhosgobel"
-#folder =  "The-Hobbit-Over-Hill-and-Under-Hill"
+#folder = "The-Hunt-for-Gollum"
+#folder = "The-Dark-of-Mirkwood"
+#Folder = "A-Journey-to-Rhosgobel"
+folder =  "The-Hobbit-Over-Hill-and-Under-Hill"
 #folder = "The-Hobbit-On-the-Doorstep"
 
+
+folder = os.path.join("cards", folder)
 cardWidth = 63.5
 cardHeight = 88.0
 leftPadding = 4.0

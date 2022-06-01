@@ -5,13 +5,16 @@ from bs4 import BeautifulSoup
 import urllib.request
 import re
 import requests
+from os import mkdir, path
+from io import BytesIO
+from PIL import Image
 
-
-set = "The-Hunt-for-Gollum"
+#set = "The-Dark-of-Mirkwood"
+#set = "The-Hunt-for-Gollum"
 #set = "Conflict-at-the-Carrock"
 #set = "A-Journey-to-Rhosgobel"
 #set = "The-Hills-of-Emyn-Muil"
-#set = "The-Hobbit-Over-Hill-and-Under-Hill"
+set = "The-Hobbit-Over-Hill-and-Under-Hill"
 #set  = "The-Hobbit-On-the-Doorstep"
 
 base_url = "http://hallofbeorn.com/LotR/Products/"
@@ -20,6 +23,13 @@ detail_base_url = "http://hallofbeorn.com/LotR/Details/"
 folder = "cards"
 #print("Enter the link \n")
 #link = input()
+
+# create directory:
+# working directoy should be the one of this file...
+dir_ = path.join("cards", set)
+mkdir(dir_)
+print("Directory '% s' created" % set)
+
 
 link = base_url + set 
 url = urllib.request.urlopen(link)
@@ -43,7 +53,6 @@ for card in details:
     url = urllib.request.urlopen(card)
     content = url.read()
     soup = BeautifulSoup(content)
-    image = [im['src'] for im in soup.find_all('img',class_='card-image')][0]
     repeat = [span.text for span in soup.find_all('span', style="margin-left:8px;display:inline-block;" )][0]
     pattern = re.compile(r"\(x(\d)\)")
     pattern2 = re.compile(r"\(x(\d)/x\d\)")
@@ -58,18 +67,45 @@ for card in details:
     else:
         if len(rep2) == 1:
             nrep = int(rep2[0])        
-    file_name = image.split('/')[-1]
-    r = requests.get(image)
-    if nrep == 1:
-        with open(set + "---" + file_name,'wb') as f:
-            f.write(r.content)
-            print(file_name)
-        f.close()
-    if nrep > 1:
-        for num in range(nrep):
-            file_name2 = set + "---" + file_name.replace(".jpg", "") + "-" + str(num) + ".jpg"
-            with open(file_name2,'wb') as f:
+
+    images = [im['src'] for im in soup.find_all('img',class_='card-image')]
+    ln = len(images)
+    if ln > 1:
+        print("detected more than one image: ", ln)
+
+    for image in images:
+        file_name = image.split('/')[-1]
+        r = requests.get(image)
+        # find width and height ::
+        img = Image.open(BytesIO(r.content))
+        width, height = img.size
+        ratio = height / width
+        if ratio >= 1:
+            quest = False
+        else:
+            quest = True
+        
+        if nrep == 1:
+            fn = path.join(dir_, set + "---" + file_name)
+            if quest:
+                print("Quest detected: changing name ")
+                filename_ = file_name.replace(".jpg", "") + "-QUEST.jpg"
+                fn = path.join(dir_, set + "---" + filename_)
+
+            with open(fn,'wb') as f:
                 f.write(r.content)
-                print(file_name)
+            print(file_name)
             f.close()
+            
+        if nrep > 1:
+            for num in range(nrep):
+                file_name2 = set + "---" + file_name.replace(".jpg", "") + "-" + str(num) + ".jpg"
+                if quest:
+                    file_name2 = set + "---" + file_name.replace(".jpg", "") + "-" + str(num) + "-QUEST.jpg"
+                    
+                fn = path.join(dir_,file_name2)
+                with open(fn,'wb') as f:
+                    f.write(r.content)
+                print(file_name)
+                f.close()
     
