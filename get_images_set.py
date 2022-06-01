@@ -30,7 +30,6 @@ dir_ = path.join("cards", set)
 mkdir(dir_)
 print("Directory '% s' created" % set)
 
-
 link = base_url + set 
 url = urllib.request.urlopen(link)
 content = url.read()
